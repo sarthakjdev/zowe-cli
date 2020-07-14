@@ -19,7 +19,9 @@ export * from "./methods/get";
 export * from "./methods/utilities";
 export * from "./methods/mount";
 export * from "./methods/unmount";
+export * from "./methods/hRecall";
 export * from "./methods/rename";
+export * from "./methods/hDelete";
 export * from "./methods/hMigrate";
 export * from "./methods/copy";
 
@@ -30,6 +32,7 @@ export * from "./doc/IDataSet";
 export * from "./doc/IZosFilesResponse";
 export * from "./doc/IOptionsFullResponse";
 export * from "./doc/IRestClientResponse";
+export * from "./doc/IOptions";
 export * from "./doc/types/ZosmfMigratedRecallOptions";
 export * from "./doc/types/ZosmfRestClientProperties";
 

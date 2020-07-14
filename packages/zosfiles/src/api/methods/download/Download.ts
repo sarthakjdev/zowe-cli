@@ -9,24 +9,19 @@
 *
 */
 
-import { AbstractSession, ImperativeExpect, IO, Logger, TaskProgress } from "@zowe/imperative";
+import { AbstractSession, ImperativeExpect, IO, Logger, TaskProgress, ImperativeError } from "@zowe/imperative";
 
 import { posix } from "path";
 import * as util from "util";
 
-import { ZosmfRestClient } from "../../../../../rest";
-import { IHeaderContent } from "../../../../../rest/src/doc/IHeaderContent";
-import { ZosmfHeaders } from "../../../../../rest/src/ZosmfHeaders";
+import { ZosmfRestClient, IHeaderContent, ZosmfHeaders } from "../../../../../rest";
 import { ZosFilesConstants } from "../../constants/ZosFiles.constants";
 import { ZosFilesMessages } from "../../constants/ZosFiles.messages";
 import { IZosFilesResponse } from "../../doc/IZosFilesResponse";
 import { ZosFilesUtils } from "../../utils/ZosFilesUtils";
 import { List } from "../list/List";
 import { IDownloadOptions } from "./doc/IDownloadOptions";
-import { Get } from "../get/Get";
 import { asyncPool } from "../../../../../utils";
-import { IGetOptions } from "../get";
-import { Writable } from "stream";
 import { IRestClientResponse } from "../../doc/IRestClientResponse";
 import { CLIENT_PROPERTY } from "../../doc/types/ZosmfRestClientProperties";
 import { IOptionsFullResponse } from "../../doc/IOptionsFullResponse";
@@ -79,15 +74,11 @@ export class Download {
 
             Logger.getAppLogger().debug(`Endpoint: ${endpoint}`);
 
-            let reqHeaders: IHeaderContent[] = [];
-            if (options.binary) {
-                reqHeaders = [ZosmfHeaders.X_IBM_BINARY];
-            }
+            const reqHeaders: IHeaderContent[] = ZosFilesUtils.generateHeadersBasedOnOptions(options);
 
             reqHeaders.push(ZosmfHeaders.X_IBM_RESPONSE_TIMEOUT);
 
             // Get contents of the data set
-
             let extension = ZosFilesUtils.DEFAULT_FILE_EXTENSION;
             if (options.extension != null) {
                 extension = options.extension;
@@ -96,8 +87,20 @@ export class Download {
             // Get a proper destination for the file to be downloaded
             // If the "file" is not provided, we create a folder structure similar to the data set name
             // Note that the "extension" options do not affect the destination if the "file" options were provided
-            const destination = options.file || ZosFilesUtils.getDirsFromDataSet(dataSetName) +
-                IO.normalizeExtension(extension);
+            const destination = (() => {
+                if (options.file) {
+                    return options.file;
+                }
+
+                let generatedFilePath = ZosFilesUtils.getDirsFromDataSet(dataSetName);
+                // Method above lowercased characters.
+                // In case of preserving original letter case, uppercase all characters.
+                if (options.preserveOriginalLetterCase) {
+                    generatedFilePath = generatedFilePath.toUpperCase();
+                }
+
+                return generatedFilePath + IO.normalizeExtension(extension);
+            })();
 
             IO.createDirsSyncFromFilePath(destination);
 
@@ -183,7 +186,25 @@ export class Download {
                 };
             }
 
-            const baseDir = options.directory || ZosFilesUtils.getDirsFromDataSet(dataSetName);
+            // If the "directory" option is provided, use it.
+            // Otherwise use default directory generated from data set name.
+            const baseDir = (() => {
+                if (options.directory) {
+                    return options.directory;
+                }
+
+                let generatedDirectory = ZosFilesUtils.getDirsFromDataSet(dataSetName);
+                // Method above lowercased characters.
+                // In case of preserving original letter case, uppercase all characters.
+                if (options.preserveOriginalLetterCase) {
+                    generatedDirectory = generatedDirectory.toUpperCase();
+                }
+
+                return generatedDirectory;
+            })();
+
+            const downloadErrors: Error[] = [];
+            const failedMembers: string[] = [];
             let downloadsInitiated = 0;
 
             let extension = ZosFilesUtils.DEFAULT_FILE_EXTENSION;
@@ -203,11 +224,22 @@ export class Download {
                         (downloadsInitiated / memberList.length));
                     downloadsInitiated++;
                 }
+
+                const fileName = options.preserveOriginalLetterCase ? mem.member : mem.member.toLowerCase();
                 return this.dataSet(session, `${dataSetName}(${mem.member})`, {
                     volume: options.volume,
-                    file: baseDir + IO.FILE_DELIM + mem.member.toLowerCase() +
-                        IO.normalizeExtension(extension),
-                    binary: options.binary
+                    file: baseDir + IO.FILE_DELIM + fileName + IO.normalizeExtension(extension),
+                    binary: options.binary,
+                    encoding: options.encoding
+                }).catch((err) => {
+                    // If we should fail fast, rethrow error
+                    if (options.failFast || options.failFast === undefined) {
+                        throw err;
+                    }
+                    downloadErrors.push(err);
+                    failedMembers.push(fileName);
+                    // Delete the file that could not be downloaded
+                    IO.deleteFile(baseDir + IO.FILE_DELIM + fileName + IO.normalizeExtension(extension));
                 });
             };
 
@@ -217,6 +249,16 @@ export class Download {
                 await Promise.all(memberList.map(createDownloadPromise));
             } else {
                 await asyncPool(maxConcurrentRequests, memberList, createDownloadPromise);
+            }
+
+            // Handle failed downloads if no errors were thrown yet
+            if (downloadErrors.length > 0) {
+                throw new ImperativeError({
+                    msg: ZosFilesMessages.memberDownloadFailed.message + failedMembers.join("\n") + "\n\n" +
+                        downloadErrors.map((err: Error) => err.message).join("\n"),
+                    causeErrors: downloadErrors,
+                    additionalDetails: failedMembers.join("\n")
+                });
             }
 
             return {
@@ -270,10 +312,7 @@ export class Download {
             ussFileName = encodeURIComponent(ussFileName);
             const endpoint = posix.join(ZosFilesConstants.RESOURCE, ZosFilesConstants.RES_USS_FILES, ussFileName);
 
-            let reqHeaders: IHeaderContent[] = [];
-            if (options.binary) {
-                reqHeaders = [ZosmfHeaders.X_IBM_BINARY];
-            }
+            const reqHeaders: IHeaderContent[] = ZosFilesUtils.generateHeadersBasedOnOptions(options);
 
             // Use specific options to mimic ZosmfRestClient.getStreamed()
             const requestOptions: IOptionsFullResponse = {

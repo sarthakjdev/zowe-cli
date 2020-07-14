@@ -29,8 +29,10 @@ export default class DatasetHandler extends ZosFilesBaseHandler {
         return Download.dataSet(session, commandParameters.arguments.dataSetName, {
                 volume: commandParameters.arguments.volumeSerial,
                 binary: commandParameters.arguments.binary,
+                encoding: commandParameters.arguments.encoding,
                 file: commandParameters.arguments.file,
                 extension: commandParameters.arguments.extension,
+                preserveOriginalLetterCase: commandParameters.arguments.preserveOriginalLetterCase,
                 task
             });
     }

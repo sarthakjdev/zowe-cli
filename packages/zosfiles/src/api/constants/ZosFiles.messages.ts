@@ -524,6 +524,14 @@ export const ZosFilesMessages: { [key: string]: IMessageDefinition } = {
     },
 
     /**
+     * Message indicating that the data set was recalled successfully.
+     * @type {IMessageDefinition}
+     */
+    datasetRecallRequested: {
+        message: "Data set recall requested."
+    },
+
+    /**
      * Message indicating that the data set has been renamed successfully.
      * @type {IMessageDefinition}
      */
@@ -532,10 +540,18 @@ export const ZosFilesMessages: { [key: string]: IMessageDefinition } = {
     },
 
     /**
-     * Message indicating that the data set was recalled successfully.
+     * Message indicating that the data set was deleted successfully.
      * @type {IMessageDefinition}
      */
-    datasetMigratedSuccessfully: {
+    datasetDeletionRequested: {
+        message: "Data set deletion requested."
+    },
+
+    /**
+     * Message indicating that the data set was migrated successfully.
+     * @type {IMessageDefinition}
+     */
+    datasetMigrationRequested: {
         message: "Data set migraton requested."
     },
 
@@ -545,5 +561,13 @@ export const ZosFilesMessages: { [key: string]: IMessageDefinition } = {
      */
     datasetCopiedSuccessfully: {
         message: "Data set copied successfully."
+    },
+
+    /**
+     * Message indicating that the following members failed to properly download
+     * @type {IMessageDefinition}
+     */
+    memberDownloadFailed: {
+        message: "Failed to download the following members: \n"
     }
 };
