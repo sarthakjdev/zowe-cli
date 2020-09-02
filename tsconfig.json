@@ -14,7 +14,8 @@
     "removeComments": false,
     "pretty": true,
     "sourceMap": true,
-    "newLine": "lf"
+    "newLine": "lf",
+    "allowJs": true
   },
   "include": [
     "packages/**/*"
