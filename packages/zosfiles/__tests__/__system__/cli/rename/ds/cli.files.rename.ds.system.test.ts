@@ -10,12 +10,14 @@
 */
 
 import { Session } from "@zowe/imperative";
-import { runCliScript } from "../../../../../../../__tests__/__src__/TestUtils";
+import { runCliScript, delay } from "../../../../../../../__tests__/__src__/TestUtils";
 import { TestEnvironment } from "../../../../../../../__tests__/__src__/environment/TestEnvironment";
 import { ITestEnvironment } from "../../../../../../../__tests__/__src__/environment/doc/response/ITestEnvironment";
 import { ITestPropertiesSchema } from "../../../../../../../__tests__/__src__/properties/ITestPropertiesSchema";
 import { Delete, Create, CreateDataSetTypeEnum, Upload, Get } from "../../../../../src/api";
 import { join } from "path";
+
+const delayTime: number = 500;
 
 let REAL_SESSION: Session;
 let TEST_ENVIRONMENT: ITestEnvironment;
@@ -54,6 +56,7 @@ describe("Rename data set", () => {
             beforeEach(async () => {
                 await Create.dataSet(REAL_SESSION, CreateDataSetTypeEnum.DATA_SET_SEQUENTIAL, beforeDataSetName);
                 await Upload.bufferToDataSet(REAL_SESSION, Buffer.from(data), beforeDataSetName);
+                await delay(delayTime);
             });
             it("should rename a data set from the command", async () => {
                 let response;
@@ -102,6 +105,7 @@ describe("Rename data set", () => {
             beforeEach(async () => {
                 await Create.dataSet(REAL_SESSION, CreateDataSetTypeEnum.DATA_SET_PARTITIONED, beforeDataSetName);
                 await Upload.bufferToDataSet(REAL_SESSION, Buffer.from(data), `${beforeDataSetName}(${memberName})`);
+                await delay(delayTime);
             });
             it("should rename a data set from the command", async () => {
                 let response;

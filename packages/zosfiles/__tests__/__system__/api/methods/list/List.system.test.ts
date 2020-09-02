@@ -15,7 +15,9 @@ import { inspect } from "util";
 import { ITestEnvironment } from "../../../../../../../__tests__/__src__/environment/doc/response/ITestEnvironment";
 import { TestEnvironment } from "../../../../../../../__tests__/__src__/environment/TestEnvironment";
 import { ITestPropertiesSchema } from "../../../../../../../__tests__/__src__/properties/ITestPropertiesSchema";
-import { getUniqueDatasetName } from "../../../../../../../__tests__/__src__/TestUtils";
+import { getUniqueDatasetName, delay } from "../../../../../../../__tests__/__src__/TestUtils";
+
+const delayTime: number = 500;
 
 let REAL_SESSION: Session;
 let testEnvironment: ITestEnvironment;
@@ -54,6 +56,7 @@ describe("List command group", () => {
                 try {
                     await Create.dataSet(REAL_SESSION, CreateDataSetTypeEnum.DATA_SET_PARTITIONED, dsname);
                     await Upload.bufferToDataSet(REAL_SESSION, Buffer.from(testString), `${dsname}(${testString})`);
+                    await delay(delayTime);
                 } catch (err) {
                     throw err;
                 }
@@ -185,6 +188,7 @@ describe("List command group", () => {
             beforeEach(async () => {
                 try {
                     await Create.dataSet(REAL_SESSION, CreateDataSetTypeEnum.DATA_SET_SEQUENTIAL, dsname);
+                    await delay(delayTime);
                 } catch (err) {
                     throw err;
                 }
@@ -284,6 +288,7 @@ describe("List command group", () => {
                 try {
                     response = await Create.uss(REAL_SESSION, path, "directory");
                     response = await Create.uss(REAL_SESSION, `${path}/${filename}`, "file");
+                    await delay(delayTime);
                 } catch (err) {
                     error = err;
                     Imperative.console.info("Error: " + inspect(error));
