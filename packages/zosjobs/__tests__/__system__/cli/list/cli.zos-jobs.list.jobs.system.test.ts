@@ -14,6 +14,7 @@ import { TestEnvironment } from "./../../../../../../__tests__/__src__/environme
 import { runCliScript } from "./../../../../../../__tests__/__src__/TestUtils";
 import { Session } from "@zowe/imperative";
 import { ITestPropertiesSchema } from "../../../../../../__tests__/__src__/properties/ITestPropertiesSchema";
+import { join } from "path";
 
 // Test Environment populated in the beforeAll();
 let TEST_ENVIRONMENT: ITestEnvironment;
@@ -33,7 +34,7 @@ const trimMessage = (message: string) => {
 };
 
 describe("zos-jobs list jobs command", () => {
-    const scriptDir = __dirname + "/__scripts__/list-jobs/";
+    const scriptDir = join(__dirname, "__scripts__", "list-jobs");
     // Create the unique test environment
     beforeAll(async () => {
         TEST_ENVIRONMENT = await TestEnvironment.setUp({
@@ -58,7 +59,7 @@ describe("zos-jobs list jobs command", () => {
 
         it("should be able to submit two jobs and then find both in the output",
             () => {
-                const response = runCliScript(scriptDir + "/submit_and_list_jobs.sh", TEST_ENVIRONMENT,
+                const response = runCliScript(join(scriptDir, "submit_and_list_jobs.sh"), TEST_ENVIRONMENT,
                     [TEST_ENVIRONMENT.systemTestProperties.zosjobs.iefbr14Member]);
                 expect(response.stderr.toString()).toBe("");
                 expect(response.status).toBe(0);
@@ -68,7 +69,7 @@ describe("zos-jobs list jobs command", () => {
         it("should be able to submit one job and then not see the job if we list jobs for a different user ",
             () => {
                 // note: this test could fail if your user Id starts with "FAKE"
-                const response = runCliScript(scriptDir + "/submit_and_list_jobs_no_match.sh", TEST_ENVIRONMENT,
+                const response = runCliScript(join(scriptDir, "submit_and_list_jobs_no_match.sh"), TEST_ENVIRONMENT,
                     [TEST_ENVIRONMENT.systemTestProperties.zosjobs.iefbr14Member]);
                 expect(response.stderr.toString()).toBe("");
                 expect(response.status).toBe(0);
@@ -101,7 +102,7 @@ describe("zos-jobs list jobs command", () => {
                     TEST_ENVIRONMENT_NO_PROF.env[ZOWE_OPT_BASE_PATH] = SYSTEM_PROPS.zosmf.basePath;
                 }
 
-                const response = runCliScript(scriptDir + "/submit_and_list_jobs_fully_qualified.sh",
+                const response = runCliScript(join(scriptDir, "submit_and_list_jobs_fully_qualified.sh"),
                     TEST_ENVIRONMENT_NO_PROF,
                     [
                         TEST_ENVIRONMENT_NO_PROF.systemTestProperties.zosjobs.iefbr14Member,
@@ -119,7 +120,7 @@ describe("zos-jobs list jobs command", () => {
 
     describe("error handling", () => {
         it("should present an error message if the prefix is too long", () => {
-            const response = runCliScript(scriptDir + "prefix_too_long.sh", TEST_ENVIRONMENT);
+            const response = runCliScript(join(scriptDir, "prefix_too_long.sh"), TEST_ENVIRONMENT);
             expect(response.stdout.toString()).toBe("");
             expect(response.stderr.toString()).toContain("Command Error:");
             expect(response.stderr.toString()).toContain("prefix query parameter");
@@ -127,7 +128,7 @@ describe("zos-jobs list jobs command", () => {
         });
 
         it("should present an error message if the owner is too long", () => {
-            const response = runCliScript(scriptDir + "owner_too_long.sh", TEST_ENVIRONMENT);
+            const response = runCliScript(join(scriptDir, "owner_too_long.sh"), TEST_ENVIRONMENT);
             expect(response.stdout.toString()).toBe("");
             expect(response.stderr.toString()).toContain("Command Error:");
             expect(response.stderr.toString()).toContain("owner query parameter");

@@ -52,7 +52,7 @@ describe("zos-jobs view spool-file-by-id command", () => {
 
     describe("response", () => {
         it("should be able to get the content of every spool file for a job", () => {
-            const response = runCliScript(__dirname + "/__scripts__/spool-file-by-id/get_all_spool_content.sh",
+            const response = runCliScript(join(__dirname, "__scripts__", "spool-file-by-id", "get_all_spool_content.sh"),
                 TEST_ENVIRONMENT, [IEFBR14_JOB]);
             expect(response.stderr.toString()).toBe("");
             expect(response.status).toBe(0);
@@ -70,7 +70,7 @@ describe("zos-jobs view spool-file-by-id command", () => {
             const job: IJob = await SubmitJobs.submitJclNotify(REAL_SESSION, renderedJcl);
 
             // View the DDs
-            const response = runCliScript(__dirname + "/__scripts__/spool-file-by-id/get_systsprt_dd.sh",
+            const response = runCliScript(join(__dirname, "__scripts__", "spool-file-by-id", "get_systsprt_dd.sh"),
                 TEST_ENVIRONMENT, [job.jobid]);
             expect(response.stderr.toString()).toBe("");
             expect(response.stdout.toString()).toContain("!!!SPOOL FILE!!!");
@@ -106,7 +106,7 @@ describe("zos-jobs view spool-file-by-id command", () => {
                     TEST_ENVIRONMENT_NO_PROF.env[ZOWE_OPT_BASE_PATH] = SYSTEM_PROPS.zosmf.basePath;
                 }
 
-                const response = runCliScript(__dirname + "/__scripts__/spool-file-by-id/get_all_spool_content_fully_qualified.sh",
+                const response = runCliScript(join(__dirname, "__scripts__", "spool-file-by-id", "get_all_spool_content_fully_qualified.sh"),
                     TEST_ENVIRONMENT_NO_PROF,
                     [
                         IEFBR14_JOB,
@@ -125,7 +125,7 @@ describe("zos-jobs view spool-file-by-id command", () => {
 
     describe("error handling", () => {
         it("should surface an error from z/OSMF if the jobid doesn't exist", () => {
-            const response = runCliScript(__dirname + "/__scripts__/spool-file-by-id/jobid_does_not_exist.sh",
+            const response = runCliScript(join(__dirname, "__scripts__", "spool-file-by-id", "jobid_does_not_exist.sh"),
                 TEST_ENVIRONMENT);
             expect(response.stdout.toString()).toBe("");
             expect(response.status).toBe(1);
@@ -135,7 +135,7 @@ describe("zos-jobs view spool-file-by-id command", () => {
         });
 
         it("should surface an error if the spool file ID does not exist", () => {
-            const response = runCliScript(__dirname + "/__scripts__/spool-file-by-id/spool_file_does_not_exist.sh",
+            const response = runCliScript(join(__dirname, "__scripts__", "spool-file-by-id", "spool_file_does_not_exist.sh"),
                 TEST_ENVIRONMENT, [IEFBR14_JOB]);
             expect(response.stdout.toString()).toBe("");
             expect(response.status).toBe(1);

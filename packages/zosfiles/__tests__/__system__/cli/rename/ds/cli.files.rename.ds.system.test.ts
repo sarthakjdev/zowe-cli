@@ -17,7 +17,7 @@ import { ITestPropertiesSchema } from "../../../../../../../__tests__/__src__/pr
 import { Delete, Create, CreateDataSetTypeEnum, Upload, Get } from "../../../../../src/api";
 import { join } from "path";
 
-const delayTime: number = 500;
+const delayTime: number = 2000;
 
 let REAL_SESSION: Session;
 let TEST_ENVIRONMENT: ITestEnvironment;
