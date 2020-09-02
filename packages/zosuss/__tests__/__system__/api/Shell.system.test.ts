@@ -147,7 +147,8 @@ describe("zowe uss issue ssh api call test", () => {
         if (process.platform === "win32") {
             expect(error.toString()).toContain(ZosUssMessages.connectionRefused.message);
         } else {
-            expect(error.toString()).toContain(ZosUssMessages.allAuthMethodsFailed.message);
+            expect(error.toString().contains(ZosUssMessages.allAuthMethodsFailed.message) ||
+                   error.toString().contains(ZosUssMessages.connectionRefused.message));
         }
 
     }, TIME_OUT);
