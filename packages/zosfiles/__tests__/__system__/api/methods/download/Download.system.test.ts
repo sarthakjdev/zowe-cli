@@ -24,7 +24,7 @@ import { Imperative, IO, Session } from "@zowe/imperative";
 import { inspect } from "util";
 import { ITestEnvironment } from "../../../../../../../__tests__/__src__/environment/doc/response/ITestEnvironment";
 import { TestEnvironment } from "../../../../../../../__tests__/__src__/environment/TestEnvironment";
-import { getUniqueDatasetName, stripNewLines } from "../../../../../../../__tests__/__src__/TestUtils";
+import { getUniqueDatasetName, stripNewLines, delay } from "../../../../../../../__tests__/__src__/TestUtils";
 import { ZosmfRestClient } from "../../../../../../rest";
 import { readdirSync, readFileSync } from "fs";
 import { ZosmfHeaders } from "../../../../../../rest/src/api/ZosmfHeaders";
@@ -32,6 +32,7 @@ import { posix } from "path";
 import { ITestPropertiesSchema } from "../../../../../../../__tests__/__src__/properties/ITestPropertiesSchema";
 
 const rimraf = require("rimraf").sync;
+const delayTime: number = 500;
 
 let REAL_SESSION: Session;
 let testEnvironment: ITestEnvironment;
@@ -73,6 +74,8 @@ describe("Download Data Set", () => {
                 } catch (err) {
                     error = err;
                 }
+
+                await delay(delayTime);
             });
 
             afterEach(async () => {
@@ -89,6 +92,7 @@ describe("Download Data Set", () => {
                 // variable 'file' should be set in the test
                 const folders = file.split("/");
                 const rc = rimraf(folders[0]);
+                await delay(delayTime);
             });
 
             it("should download a data set", async () => {
