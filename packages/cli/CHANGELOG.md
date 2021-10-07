@@ -2,6 +2,10 @@
 
 All notable changes to the Zowe CLI package will be documented in this file.
 
+## Recent Changes
+
+- Enhancement: Updated version of imperative to include new command: zowe config update-schemas [#1059](https://github.com/zowe/zowe-cli/issues/1059)
+
 ## `7.0.0-next.202109281609`
 
 - Enhancement: Added `config import` command that imports team config files from a local path or web URL. [#1083](https://github.com/zowe/zowe-cli/issues/1083)
