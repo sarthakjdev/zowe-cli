@@ -2,6 +2,10 @@
 
 All notable changes to the Zowe CLI test utils package will be documented in this file.
 
+## Recent Changes
+
+- BugFix: Updated runCliScript function to add the encoding: buffer option to avoid type-cast issues with `(string | Buffer) as Buffer`
+
 ## `7.0.0-next.202108302038`
 
 - Corrected an attempt to rethrow an error with the NEW keyword which fails to compile with the latest version of typescript
