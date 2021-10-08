@@ -26,6 +26,7 @@ import { Headers, Imperative, ImperativeError, Session } from "@zowe/imperative"
 import { ZosmfRestClient } from "../../../core/lib/rest/ZosmfRestClient";
 import { inspect } from "util";
 
+
 const START_HEADERS: any[] = [Headers.APPLICATION_JSON];
 
 const ACCOUNT_NUMBER: string = "DEFAULT";
@@ -193,7 +194,6 @@ describe("StartTso getResourcesQuery", () => {
     });
 });
 
-
 describe("StartTso startCommon", () => {
     it("should succeed with correct parameters", async () => {
         (ZosmfRestClient.postExpectJSON as any) = jest.fn<object>((): Promise<object> => {
@@ -212,10 +212,10 @@ describe("StartTso startCommon", () => {
             error = thrownError;
             Imperative.console.info(`Error ${inspect(error)}`);
         }
+        expectZosmfResponseSucceeded(response, error);
         expect((ZosmfRestClient.postExpectJSON as any)).toHaveBeenCalledTimes(1);
         expect((ZosmfRestClient.postExpectJSON as any)).toHaveBeenCalledWith(PRETEND_SESSION, RESOURCES_QUERY,
             START_HEADERS);
-        expectZosmfResponseSucceeded(response, error);
     });
 
     it("should throw an error if session parameter is undefined", async () => {

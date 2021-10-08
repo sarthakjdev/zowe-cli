@@ -9,36 +9,36 @@
 *
 */
 
-const path = require("path");
+const __mocks__path = require("path");
 
-const fs = jest.genMockFromModule("fs") as any;
-const oldReadFileSync = require.requireActual("fs").readFileSync;
+let __mocks__fs = jest.genMockFromModule("fs") as any;
+const __mocks__oldReadFileSync = require.requireActual("fs").readFileSync;
 
 // This is a custom function that our tests can use during setup to specify
 // what the files on the "mock" filesystem should look like when any of the
 // `fs` APIs are used.
-let mockFiles = Object.create(null);
-function __setMockFiles(newMockFiles: { [key: string]: string }) {
-    mockFiles = Object.create(null);
+let __mocks__mockFiles = Object.create(null);
+function __mocks__fs____setMockFiles(newMockFiles: { [key: string]: string }) {
+    __mocks__mockFiles = Object.create(null);
     for (const file in newMockFiles) {
-        const dir = path.dirname(file);
-        if (!mockFiles[dir]) {
-            mockFiles[dir] = {};
+        const dir = __mocks__path.dirname(file);
+        if (!__mocks__mockFiles[dir]) {
+            __mocks__mockFiles[dir] = {};
         }
-        mockFiles[dir][path.basename(file)] = newMockFiles[file];
+        __mocks__mockFiles[dir][__mocks__path.basename(file)] = newMockFiles[file];
     }
 }
 
 // A custom version of `readdirSync` that reads from the special mocked out
 // file list set via __setMockFiles
-function readdirSync(filePath: string) {
-    return mockFiles[filePath] || {};
+function __mocks__fs__readdirSync(filePath: string) {
+    return __mocks__mockFiles[filePath] || {};
 }
 
 // A custom version of `existsSync` that reads from the special mocked out
 // file list set via __setMockFiles
-function existsSync(filePath: string) {
-    const fileContents = readdirSync(path.dirname(filePath))[path.basename(filePath)];
+function __mocks__fs__existsSync(filePath: string) {
+    const fileContents = __mocks__fs__readdirSync(__mocks__path.dirname(filePath))[__mocks__path.basename(filePath)];
     if (typeof fileContents === "undefined") {
         return false;
     }
@@ -47,30 +47,30 @@ function existsSync(filePath: string) {
 
 // A custom version of `readFileSync` that reads from the special mocked out
 // file list set via __setMockFiles
-function readFileSync(filePath: string, encoding?: string) {
+function __mocks__fs__readFileSync(filePath: string, encoding?: string) {
     // Don't mock if yargs is trying to load a locale json file
     if (filePath.match(/node_modules.yargs/)) {
-        return oldReadFileSync(filePath, encoding);
+        return __mocks__oldReadFileSync(filePath, encoding);
     }
 
-    if (!existsSync(filePath)) {
+    if (!__mocks__fs__existsSync(filePath)) {
         throw new Error("File not found");
     }
-    return readdirSync(path.dirname(filePath))[path.basename(filePath)];
+    return __mocks__fs__readdirSync(__mocks__path.dirname(filePath))[__mocks__path.basename(filePath)];
 }
 
 // A custom version of `lstatSync` that reads from the special mocked out
 // file list set via __setMockFiles
-function lstatSync(filePath: string) {
+function __mocks__fs__lstatSync(filePath: string) {
     return {
         isFile: () => false
     };
 }
 
-fs.__setMockFiles = __setMockFiles;
-fs.existsSync = existsSync;
-fs.readFileSync = readFileSync;
-fs.readdirSync = readdirSync;
-fs.lstatSync = lstatSync;
+__mocks__fs.__setMockFiles = __mocks__fs____setMockFiles;
+__mocks__fs.existsSync = __mocks__fs__existsSync;
+__mocks__fs.readFileSync = __mocks__fs__readFileSync;
+__mocks__fs.readdirSync = __mocks__fs__readdirSync;
+__mocks__fs.lstatSync = __mocks__fs__lstatSync;
 
-module.exports = fs;
+module.exports = __mocks__fs;
