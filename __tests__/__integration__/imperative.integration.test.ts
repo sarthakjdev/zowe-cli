@@ -39,6 +39,9 @@ describe("imperative create profile", () => {
         });
 
         it("should successfully create a profile", async () => {
+            console.log("--------------------------------------\n");
+            console.log(require("child_process").execSync("where zowe").toString().trim());
+            console.log("\n--------------------------------------");
             const opts = [
                 "CreateProfileSystemTest",
                 "--host", "FAKEHOST",

@@ -30,8 +30,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [12.x, 14.x, 16.x]
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        node-version: [16.x]
+        os: [windows-latest]
 
     env:
       OS: ${{ matrix.os }}
@@ -97,10 +97,10 @@ jobs:
       id: setup-binary
       run: tar -xvzf zowe.tgz -C ./__tests__/__resources__/application_instances ${{ matrix.os == 'ubuntu-latest' && '--overwrite' || '' }}
 
-    - name: Unit Tests
-      id: unit
-      if: ${{ always() && steps.build.outcome == 'success' }}
-      run: npm run test:unit >> unit-tests.txt
+    # - name: Unit Tests
+    #   id: unit
+    #   if: ${{ always() && steps.build.outcome == 'success' }}
+    #   run: npm run test:unit >> unit-tests.txt
 
     - name: Unlock Keyring
       id: unlock-keyring
