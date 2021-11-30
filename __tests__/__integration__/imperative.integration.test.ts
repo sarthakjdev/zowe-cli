@@ -40,8 +40,8 @@ describe("imperative create profile", () => {
 
         it("should successfully create a profile", async () => {
             console.log("--------------------------------------\n"); // eslint-disable-line
-            console.log(require("child_process").spawnSync("where.exe", ["zowe"]).stderr.toString().trim()); // eslint-disable-line
-            console.log(require("child_process").spawnSync("where.exe", ["zowe"]).stdout.toString().trim()); // eslint-disable-line
+            console.log(require("child_process").spawnSync("where.exe", ["zowe"], { cwd: testEnvironment.workingDir }).stderr.toString().trim()); // eslint-disable-line
+            console.log(require("child_process").spawnSync("where.exe", ["zowe"], { cwd: testEnvironment.workingDir }).stdout.toString().trim()); // eslint-disable-line
             console.log("\n--------------------------------------"); // eslint-disable-line
             const opts = [
                 "CreateProfileSystemTest",
