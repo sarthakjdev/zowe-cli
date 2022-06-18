@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`hey command definition should say hello 1`] = `
+Object {
+  "aliases": Array [
+    "hw",
+  ],
+  "description": "hello world command to get familiar with the project, its architecture and working",
+  "handler": "/home/sarthak/projects/lfx/zowe-cli/packages/cli/src/helloWorld/Hey.handler",
+  "name": "hey",
+  "summary": "say hello world",
+  "type": "command",
+}
+`;

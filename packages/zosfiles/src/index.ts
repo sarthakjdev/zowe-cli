@@ -39,6 +39,7 @@ export * from "./methods/rename";
 export * from "./methods/unmount";
 export * from "./methods/upload";
 export * from "./methods/utilities";
+export * from "./methods/hello";
 
 export * from "./utils/ZosFilesAttributes";
 export * from "./utils/ZosFilesUtils";
